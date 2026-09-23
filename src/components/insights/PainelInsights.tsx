@@ -13,6 +13,8 @@ import {
   GraduationCap,
   Handshake,
   Info,
+  Landmark,
+  LogOut,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -45,7 +47,15 @@ function media(valores: number[]): number {
   return valores.length ? valores.reduce((a, b) => a + b, 0) / valores.length : 0;
 }
 
-export function PainelInsights({ baseReal }: { baseReal?: ReactNode }) {
+interface PainelInsightsProps {
+  baseReal?: ReactNode;
+  /** Sessão institucional validada no servidor */
+  sessao?: { nome: string; orgao: string };
+  /** Server Action que encerra a sessão institucional */
+  acaoSair?: () => Promise<void>;
+}
+
+export function PainelInsights({ baseReal, sessao, acaoSair }: PainelInsightsProps) {
   const { state } = useCapacita();
   const [incluirEmpresas, setIncluirEmpresas] = useState(true);
 
@@ -68,6 +78,25 @@ export function PainelInsights({ baseReal }: { baseReal?: ReactNode }) {
 
   return (
     <div className="space-y-6">
+      {sessao && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-slate-900 px-4 py-2.5 text-sm text-slate-200">
+          <p className="flex items-center gap-2">
+            <Landmark className="size-4 text-emerald-400" aria-hidden />
+            <span>
+              Acesso governamental · <strong className="text-white">{sessao.nome}</strong>
+              <span className="text-slate-400"> — {sessao.orgao}</span>
+            </span>
+          </p>
+          {acaoSair && (
+            <form action={acaoSair}>
+              <button type="submit" className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-slate-300 hover:bg-white/10 hover:text-white">
+                <LogOut className="size-3.5" aria-hidden /> Encerrar sessão
+              </button>
+            </form>
+          )}
+        </div>
+      )}
+
       <PageHeader
         icone={ChartColumnBig}
         modulo="Capacita Insights"

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { RotateCcw } from "lucide-react";
+import { Lock, RotateCcw } from "lucide-react";
 import { useCapacita } from "@/lib/store";
 import { cx } from "@/lib/format";
+import { ContaUsuario } from "./ContaUsuario";
 import { NAVEGACAO } from "./navegacao";
 
 function ativo(pathname: string, href: string): boolean {
-  return href === "/" ? pathname === "/" : pathname.startsWith(href);
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function Sidebar() {
@@ -29,7 +30,7 @@ export function Sidebar() {
           </div>
         </div>
         <nav className="flex-1 space-y-1 px-3">
-          {NAVEGACAO.map(({ href, rotulo, descricao, icone: Icone }) => {
+          {NAVEGACAO.map(({ href, rotulo, descricao, icone: Icone, restrito }) => {
             const selecionado = ativo(pathname, href);
             return (
               <Link
@@ -41,15 +42,19 @@ export function Sidebar() {
                 )}
               >
                 <Icone className={cx("mt-0.5 size-4 shrink-0", selecionado ? "text-teal-700" : "text-slate-400")} aria-hidden />
-                <span>
-                  <span className="block text-sm font-medium">{rotulo}</span>
+                <span className="flex-1">
+                  <span className="flex items-center gap-1.5 text-sm font-medium">
+                    {rotulo}
+                    {restrito && <Lock className="size-3 text-slate-400" aria-label="acesso restrito" />}
+                  </span>
                   <span className="block text-xs text-slate-500">{descricao}</span>
                 </span>
               </Link>
             );
           })}
         </nav>
-        <div className="border-t border-slate-200 p-4">
+        <div className="space-y-3 border-t border-slate-200 p-4">
+          <ContaUsuario />
           <button
             type="button"
             onClick={resetar}
@@ -58,7 +63,7 @@ export function Sidebar() {
             <RotateCcw className="size-3.5" aria-hidden />
             Restaurar dados de demonstração
           </button>
-          <p className="mt-3 text-[11px] leading-snug text-slate-400">
+          <p className="text-[11px] leading-snug text-slate-400">
             Dados fictícios salvos localmente no navegador. Painéis institucionais usam apenas dados agregados (LGPD).
           </p>
         </div>
@@ -68,7 +73,8 @@ export function Sidebar() {
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur lg:hidden">
         <div className="flex items-center gap-2 px-4 py-3">
           <div className="flex size-8 items-center justify-center rounded-lg bg-teal-600 text-sm font-black text-white">C</div>
-          <p className="text-sm font-bold text-slate-900">Capacita RH</p>
+          <p className="flex-1 text-sm font-bold text-slate-900">Capacita RH</p>
+          <ContaUsuario compacto />
         </div>
         <nav className="flex gap-1 overflow-x-auto px-2 pb-2">
           {NAVEGACAO.map(({ href, rotulo, icone: Icone }) => (

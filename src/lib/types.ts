@@ -173,3 +173,30 @@ export interface EtapaFunil {
   etapa: string;
   valor: number;
 }
+
+// ---------- Capacitação (catálogo formativo) ----------
+
+export type AreaCurso = "hotelaria" | "vendas" | "gastronomia" | "atendimento" | "tecnologia";
+export type LocalCurso = "presencial-centro" | "presencial-barra-sul" | "online" | "hibrido";
+export type Turno = "matutino" | "vespertino" | "noturno";
+export type FaixaCarga = "curta" | "media" | "longa";
+
+export interface Curso {
+  id: string;
+  titulo: string;
+  descricao: string;
+  cargaHoraria: number;
+  instituicao: string;
+  area: AreaCurso;
+  local: LocalCurso;
+  /** Detalhe do local/formato (endereço de referência ou plataforma) */
+  detalheLocal: string;
+  turnos: Turno[];
+  vagas: number;
+  /** Data de início da próxima turma (ISO) */
+  inicio: string;
+  gratuito: boolean;
+  competencias: string[];
+  /** Trilha do Capacita relacionada, quando houver */
+  trilhaId?: string;
+}

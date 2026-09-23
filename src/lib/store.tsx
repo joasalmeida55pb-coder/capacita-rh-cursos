@@ -28,6 +28,8 @@ export interface CapacitaState {
   colaboradores: Colaborador[];
   /** IDs de talentos convidados/encaminhados pela empresa */
   encaminhados: string[];
+  /** IDs de cursos do catálogo de Capacitação em que o cidadão se inscreveu */
+  inscricoesCursos: string[];
 }
 
 const STORAGE_KEY = "capacita-rh:estado:v1";
@@ -39,6 +41,7 @@ const estadoInicial: CapacitaState = {
   previsoes: PREVISOES_DEMO,
   colaboradores: COLABORADORES_DEMO,
   encaminhados: [],
+  inscricoesCursos: [],
 };
 
 type Acao =
@@ -51,6 +54,7 @@ type Acao =
   | { type: "removerTrilha"; colaboradorId: string; trilhaId: string }
   | { type: "avancarTrilhaColaborador"; colaboradorId: string; trilhaId: string }
   | { type: "alternarEncaminhamento"; talentoId: string }
+  | { type: "alternarInscricaoCurso"; cursoId: string }
   | { type: "resetar" };
 
 function hojeISO(): string {
@@ -146,6 +150,14 @@ function reducer(state: CapacitaState, acao: Acao): CapacitaState {
           : [...state.encaminhados, acao.talentoId],
       };
 
+    case "alternarInscricaoCurso":
+      return {
+        ...state,
+        inscricoesCursos: state.inscricoesCursos.includes(acao.cursoId)
+          ? state.inscricoesCursos.filter((id) => id !== acao.cursoId)
+          : [...state.inscricoesCursos, acao.cursoId],
+      };
+
     case "resetar":
       return estadoInicial;
   }
@@ -175,6 +187,7 @@ interface CapacitaContexto {
   removerTrilha: (colaboradorId: string, trilhaId: string) => void;
   avancarTrilhaColaborador: (colaboradorId: string, trilhaId: string) => void;
   alternarEncaminhamento: (talentoId: string) => void;
+  alternarInscricaoCurso: (cursoId: string) => void;
   resetar: () => void;
 }
 
@@ -221,6 +234,7 @@ export function CapacitaProvider({ children }: { children: ReactNode }) {
       avancarTrilhaColaborador: (colaboradorId, trilhaId) =>
         dispatch({ type: "avancarTrilhaColaborador", colaboradorId, trilhaId }),
       alternarEncaminhamento: (talentoId) => dispatch({ type: "alternarEncaminhamento", talentoId }),
+      alternarInscricaoCurso: (cursoId) => dispatch({ type: "alternarInscricaoCurso", cursoId }),
       resetar: () => {
         try {
           window.localStorage.removeItem(STORAGE_KEY);
